@@ -1,0 +1,894 @@
+/* Tailwind/PostCSS directives */
+@import "tailwindcss";
+@source "../src";
+@import "tw-animate-css";
+
+/* Build-time/custom at-rules */
+@custom-variant dark (&:is(.dark *));
+
+/* Theme mapping */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --color-green: var(--green);
+  --color-green-soft: var(--green-soft);
+  --color-blue: var(--blue);
+  --color-line: var(--line);
+  --color-card: var(--card);
+}
+
+:root {
+  --bg: #ffffff;
+  --ink: #0d1f14;
+  --green: #10a86a;
+  --green-soft: #e2f0e9; /* slightly darker tint so light cards have a touch more depth */
+  --card: var(--green-soft);
+  --card-float: #e8f4ec; /* floating cards: slightly darker than --green-soft so they pop on light bg */
+  --blue: #2563eb;
+  --line: rgba(16, 168, 106, 0.22);
+  --background: var(--bg);
+  --foreground: var(--ink);
+  --border: var(--line);
+  --text-stroke: #0a6a44; /* dark green outline for .text-stroke */
+  color-scheme: light;
+}
+
+/* Dark mode — deep green-black palette that pairs with the brand green */
+.dark {
+  --bg: #07110d;
+  --ink: #eaf5ee;
+  --green: #34d39a; /* brighter emerald so it pops on dark */
+  --green-soft: #143023; /* elevated surface tinted with green */
+  --card: #1f4733; /* explicitly lighter than green-soft so cards stand out when placed on elevated backgrounds */
+  --card-float: #265e43; /* floating cards: slightly darker than --card for a layered feel */
+  --blue: #7bb0ff; /* softer, more legible on dark */
+  --line: rgba(234, 245, 238, 0.2);
+  --text-stroke: #0a3d2a; /* subtle dark green outline, just above bg for contrast */
+  color-scheme: dark;
+}
+
+/* Flip literal white surfaces to the dark elevated surface. Matches
+   bg-white, bg-white/85, hover:bg-white, etc. */
+.dark [class*="bg-white"] {
+  background-color: var(--green-soft) !important;
+}
+/* Keep visibility of the small toggle knob on green pills */
+.dark .toggle-knob {
+  background-color: var(--ink) !important;
+}
+
+/* Backdrop-blurred header + panels get a translucent variant */
+.dark header[class*="backdrop-blur"] {
+  background-color: color-mix(in oklab, var(--bg) 78%, transparent) !important;
+  border-color: var(--line);
+}
+
+/* Photo borders that were pure white feel too loud on dark */
+.dark [class*="border-white"] {
+  border-color: var(--green-soft) !important;
+}
+
+* {
+  border-color: var(--border);
+}
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+input,
+textarea,
+[contenteditable="true"] {
+  -webkit-user-select: auto;
+  user-select: auto;
+}
+h1,
+h2,
+h3 {
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+img {
+  color-scheme: light;
+} /* keep image backgrounds untinted */
+
+/* ============ KEYFRAMES ============ */
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes ribbon-scroll {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translateY(-14px) rotate(calc(var(--r, 0deg) + 1deg));
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 168, 106, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 22px rgba(16, 168, 106, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 168, 106, 0);
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes stagger-in {
+  from {
+    opacity: 0;
+    transform: translateX(2em);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes bounce-arrow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+/* Directional drift variants for floating cards */
+@keyframes float-lr {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translate(14px, -10px) rotate(calc(var(--r, 0deg) + 1.5deg));
+  }
+}
+@keyframes float-rl {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translate(-14px, -10px) rotate(calc(var(--r, 0deg) - 1.5deg));
+  }
+}
+@keyframes float-diag {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--r, 0deg));
+  }
+  50% {
+    transform: translate(10px, 12px) rotate(calc(var(--r, 0deg) + 2deg));
+  }
+}
+@keyframes orbit-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ============ LIQUID BLOB ============ */
+@keyframes liquid-morph {
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  25%      { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; }
+  50%      { border-radius: 50% 60% 30% 40% / 60% 40% 60% 30%; }
+  75%      { border-radius: 60% 30% 60% 40% / 30% 50% 40% 70%; }
+}
+@keyframes liquid-shimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes liquid-rise {
+  from { opacity: 0; transform: translateY(20px) scale(0.92); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes liquid-fall {
+  from { opacity: 1; transform: translateY(0) scale(1); }
+  to   { opacity: 0; transform: translateY(24px) scale(0.92); }
+}
+
+.a-liquid {
+  animation: liquid-morph 6s ease-in-out infinite, liquid-shimmer 4s ease infinite;
+  background-size: 200% 200%;
+}
+.a-liquid-rise {
+  animation: liquid-rise 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.a-liquid-fall {
+  animation: liquid-fall 0.35s cubic-bezier(0.4, 0, 0.3, 1) both;
+}
+
+/* Liquid sonner toast */
+.liquid-toast {
+  border-radius: 18px !important;
+  animation: liquid-rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(239, 68, 68, 0.92),
+    rgba(220, 38, 38, 0.96),
+    rgba(185, 28, 28, 0.92)
+  ) !important;
+  background-size: 200% 200% !important;
+  animation: liquid-morph 6s ease-in-out infinite, liquid-shimmer 4s ease infinite, liquid-rise 0.45s cubic-bezier(0.16, 1, 0.3, 1) both !important;
+  color: #fff !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow:
+    0 8px 32px rgba(239, 68, 68, 0.35),
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  padding: 14px 18px !important;
+}
+.liquid-toast [data-icon] {
+  display: none !important;
+}
+.liquid-toast [data-title] {
+  font-weight: 600 !important;
+  font-size: 0.85rem !important;
+  letter-spacing: -0.01em !important;
+}
+.liquid-toast [data-description] {
+  font-size: 0.78rem !important;
+  opacity: 0.85 !important;
+}
+.liquid-toast [data-close-button] {
+  color: rgba(255, 255, 255, 0.7) !important;
+  transition: color 0.2s, transform 0.2s !important;
+}
+.liquid-toast [data-close-button]:hover {
+  color: #fff !important;
+  transform: scale(1.15) rotate(90deg) !important;
+}
+
+/* Success liquid variant */
+.liquid-toast--success {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 168, 106, 0.92),
+    rgba(5, 130, 80, 0.96),
+    rgba(2, 100, 60, 0.92)
+  ) !important;
+  background-size: 200% 200% !important;
+  box-shadow:
+    0 8px 32px rgba(16, 168, 106, 0.35),
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+/* Warning liquid variant */
+.liquid-toast--warning {
+  background: linear-gradient(
+    135deg,
+    rgba(245, 158, 11, 0.92),
+    rgba(217, 119, 6, 0.96),
+    rgba(180, 90, 0, 0.92)
+  ) !important;
+  background-size: 200% 200% !important;
+  box-shadow:
+    0 8px 32px rgba(245, 158, 11, 0.35),
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .liquid-toast,
+  .a-liquid,
+  .a-liquid-rise,
+  .a-liquid-fall {
+    animation: none !important;
+    border-radius: 12px !important;
+  }
+}
+[data-reduced-motion="on"] .liquid-toast,
+[data-reduced-motion="on"] .a-liquid,
+[data-reduced-motion="on"] .a-liquid-rise,
+[data-reduced-motion="on"] .a-liquid-fall {
+  animation: none !important;
+  border-radius: 12px !important;
+}
+
+/* ============ ANIMATION HELPERS ============ */
+.a-marquee {
+  animation: marquee 28s linear infinite;
+  will-change: transform;
+}
+.a-ribbon {
+  animation: ribbon-scroll 36s linear infinite;
+  will-change: transform;
+}
+.a-float {
+  animation: float-y 6s ease-in-out infinite;
+}
+.a-float-lr {
+  animation: float-lr 7s ease-in-out infinite;
+}
+.a-float-rl {
+  animation: float-rl 7.5s ease-in-out infinite;
+}
+.a-float-diag {
+  animation: float-diag 8s ease-in-out infinite;
+}
+.a-spin {
+  animation: spin-slow 18s linear infinite;
+}
+.a-orbit {
+  animation: orbit-slow 40s linear infinite;
+}
+.a-pulse {
+  /* blinking light disabled — pulse animation removed across all flowing cards */
+  animation: none !important;
+}
+.a-fade-up {
+  animation: fade-up 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.a-arrow {
+  animation: bounce-arrow 1.6s ease-in-out infinite;
+}
+
+/* Locomotive-style parallax + momentum-hover follow (JS sets --py / --mx / --my). */
+.a-parallax {
+  transform: translate3d(0, var(--py, 0), 0);
+  will-change: transform;
+  transition: transform 0.12s linear;
+}
+.a-momentum {
+  transform: translate3d(var(--mx, 0), var(--my, 0), 0);
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+  will-change: transform;
+}
+.a-scroll-rotate {
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 0.18s linear;
+  will-change: transform;
+}
+
+/* Rotating stage that carries the circle + curved quote together */
+.orbit-stage {
+  position: relative;
+  display: inline-block;
+}
+
+/* Curved quote sitting on the circle's perimeter */
+.orbit-quote {
+  position: absolute;
+  inset: -11%;
+  pointer-events: none;
+  z-index: 3;
+}
+.orbit-quote svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+}
+.orbit-quote text {
+  font-family: "Playfair Display", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+  font-style: italic;
+  font-weight: 500;
+  font-size: 6.4px; /* relative to viewBox units */
+  letter-spacing: 1.4px; /* the "few pixels" between letters */
+  fill: var(--ink);
+  text-transform: none;
+}
+
+@media (max-width: 640px) {
+  .orbit-quote {
+    inset: -13%;
+  }
+  .orbit-quote text {
+    font-size: 7.2px;
+    letter-spacing: 1px;
+  }
+  .split-photo {
+    width: min(240px, 60vw);
+    border-width: 2px;
+  }
+  .orbit-stage {
+    max-width: 100%;
+  }
+}
+
+/* Reduced motion — kill continuous/scroll-driven motion on the circle + friends */
+@media (prefers-reduced-motion: reduce) {
+  .a-orbit,
+  .a-spin,
+  .a-marquee,
+  .a-ribbon,
+  .a-float,
+  .a-float-lr,
+  .a-float-rl,
+  .a-float-diag,
+  .a-pulse,
+  .a-arrow {
+    animation: none !important;
+  }
+  .a-scroll-rotate,
+  .a-parallax,
+  .a-momentum {
+    transform: none !important;
+    transition: none !important;
+  }
+}
+[data-reduced-motion="on"] .a-orbit,
+[data-reduced-motion="on"] .a-spin,
+[data-reduced-motion="on"] .a-marquee,
+[data-reduced-motion="on"] .a-ribbon,
+[data-reduced-motion="on"] .a-float,
+[data-reduced-motion="on"] .a-float-lr,
+[data-reduced-motion="on"] .a-float-rl,
+[data-reduced-motion="on"] .a-float-diag,
+[data-reduced-motion="on"] .a-pulse,
+[data-reduced-motion="on"] .a-arrow {
+  animation: none !important;
+}
+[data-reduced-motion="on"] .a-scroll-rotate,
+[data-reduced-motion="on"] .a-parallax,
+[data-reduced-motion="on"] .a-momentum {
+  transform: none !important;
+  transition: none !important;
+}
+
+/* Draggable brand marquee — uniform smooth transitions across drag and grab-tilt */
+.brand-drag {
+  will-change: transform;
+  transition: transform 0.18s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+/* Grabable flowing/marquee strip — JS sets --drag-x and toggles .is-dragging.
+   Animation is paused while grabbed; transform is overridden with the live drag offset.
+   On release the JS resumes the CSS animation from the same offset. */
+.drag-strip {
+  will-change: transform;
+  cursor: grab;
+  touch-action: pan-y; /* allow horizontal drag while page scrolls vertically */
+  user-select: none;
+}
+.drag-strip.is-dragging {
+  cursor: grabbing;
+  animation-play-state: paused !important;
+  transition: none;
+}
+.brand-item {
+  transition: transform 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) 0.03s;
+  transform-origin: center;
+}
+.brand-plus,
+.brand-name {
+  display: inline-block;
+  transition:
+    transform 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) 0.03s,
+    letter-spacing 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) 0.03s;
+  transform-origin: center;
+}
+.brand-grabbing .a-marquee {
+  animation-play-state: paused;
+}
+.brand-grabbing .a-ribbon {
+  animation-play-state: paused;
+}
+.brand-grabbing .brand-plus {
+  transform: rotate(-4.5deg) scale(1.04);
+}
+.brand-grabbing .brand-name {
+  transform: rotate(3deg);
+  letter-spacing: 0.26em;
+}
+.brand-grabbing .brand-item:nth-child(even) .brand-plus {
+  transform: rotate(4.5deg) scale(1.04);
+}
+.brand-grabbing .brand-item:nth-child(even) .brand-name {
+  transform: rotate(-3deg);
+}
+
+/* Floating card hover — pause drift, pull toward its direction, reveal an arrow.
+   Each card sets --pull-x / --pull-y (and optional --pull-r) inline. */
+.a-float,
+.a-float-lr,
+.a-float-rl,
+.a-float-diag {
+  cursor: pointer;
+  transition:
+    transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275),
+    box-shadow 0.4s ease;
+}
+.a-float:hover,
+.a-float-lr:hover,
+.a-float-rl:hover,
+.a-float-diag:hover {
+  animation-play-state: paused;
+  transform: translate(var(--pull-x, 0), var(--pull-y, -8px)) rotate(var(--pull-r, 0deg))
+    scale(1.04);
+  box-shadow: 0 22px 40px -18px rgba(16, 168, 106, 0.35);
+  z-index: 5;
+}
+
+/* Drag-tilt cards — pointer-follow with momentum + alternating tilt */
+.drag-tilt-card {
+  touch-action: none;
+  user-select: none;
+  will-change: transform;
+}
+.drag-tilt-card.is-dragging {
+  transition: none;
+  animation-play-state: paused !important;
+  cursor: grabbing;
+  z-index: 10;
+  box-shadow: 0 22px 40px -18px rgba(16, 168, 106, 0.35);
+}
+
+/* Hover tilt (data-animate="hover" pattern) */
+.a-hover-tilt {
+  display: inline-block;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
+}
+.a-hover-tilt:hover {
+  transform: scale(1.03) rotate(1deg);
+}
+
+/* Photo collage pieces: rotate via CSS var and scale on hover */
+.photo-tilt {
+  transform: rotate(var(--rot, 0deg)) scale(1);
+  transition: transform 0.3s ease-out;
+}
+.photo-tilt:hover {
+  transform: rotate(var(--rot, 0deg)) scale(1.05);
+}
+
+/* Button — scale/rotate + text slide up (from original .button pattern) */
+.a-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.4rem;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  font-weight: 600;
+  --mask-height: 1.2em;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.a-button:hover {
+  transform: scale(1.04) rotate(-1deg);
+}
+.a-button:active {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
+}
+.a-button--ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1.5px solid var(--green);
+}
+.a-button--ghost:hover {
+  background: var(--green-soft);
+  color: var(--ink);
+}
+/* Ghost button on dark backgrounds (e.g. green CTA sections) */
+.a-button--ghost-light {
+  background: transparent;
+  color: #fff;
+  border: 1.5px solid #fff;
+}
+.a-button--ghost-light:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+.a-button__mask {
+  overflow: hidden;
+  height: var(--mask-height);
+  display: inline-block;
+  position: relative;
+  line-height: 1;
+}
+.a-button__text {
+  display: block;
+  line-height: var(--mask-height);
+  --roll-gap: 0.22em;
+  transition: transform 0.45s cubic-bezier(0.7, 0, 0.2, 1);
+}
+.a-button:hover .a-button__text {
+  transform: translateY(calc(-50% - var(--roll-gap) / 2));
+}
+.a-button__text::after {
+  content: attr(data-text);
+  display: block;
+  line-height: var(--mask-height);
+  margin-top: var(--roll-gap);
+}
+
+/* Underline link (data-underline-link) */
+.a-underline {
+  position: relative;
+  text-decoration: none;
+}
+.a-underline::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0) rotate(0.001deg);
+  transform-origin: right center;
+  transition: transform 0.7s cubic-bezier(0.625, 0.05, 0, 1);
+}
+.a-underline:hover::before {
+  transform: scaleX(1) rotate(0.001deg);
+  transform-origin: left center;
+}
+
+/* Ticket-shape card (from original card mask) */
+.ticket {
+  background: var(--card);
+  border: none;
+  -webkit-mask:
+    radial-gradient(circle at 0 0, transparent 18px, #000 18px) top left,
+    radial-gradient(circle at 100% 0, transparent 18px, #000 18px) top right,
+    radial-gradient(circle at 0 100%, transparent 18px, #000 18px) bottom left,
+    radial-gradient(circle at 100% 100%, transparent 18px, #000 18px) bottom right;
+  -webkit-mask-size: 51% 51%;
+  -webkit-mask-repeat: no-repeat;
+  mask:
+    radial-gradient(circle at 0 0, transparent 18px, #000 18px) top left,
+    radial-gradient(circle at 100% 0, transparent 18px, #000 18px) top right,
+    radial-gradient(circle at 0 100%, transparent 18px, #000 18px) bottom left,
+    radial-gradient(circle at 100% 100%, transparent 18px, #000 18px) bottom right;
+  mask-size: 51% 51%;
+  mask-repeat: no-repeat;
+}
+
+/* When ticket cards sit on the green-soft section, make them pure white for max contrast (light theme). */
+.bg-green-soft .ticket {
+  background: #ffffff;
+  color: var(--ink);
+  /* keep a soft neutral shadow so cards read above the green background */
+  box-shadow: 0 10px 28px -12px rgba(13, 31, 20, 0.06);
+}
+/* In dark mode revert to the original tinted card so contrast and depth are preserved */
+.dark .bg-green-soft .ticket {
+  background: var(--card);
+  color: var(--ink);
+  /* match dark theme ticket filters from earlier rules */
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.15)) drop-shadow(0 18px 30px rgba(16, 168, 106, 0.25));
+  box-shadow: none;
+}
+
+/* Floating / flowing cards: clean rectangle with a slightly darker surface
+   so they stand out from the section background in both themes. No mask,
+   so the page background doesn't bleed through the corners. */
+.float-card {
+  background: var(--card-float);
+  border: none;
+  border-radius: 12px;
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+}
+
+/* Lift ticket cards above the dark background so edges read clearly */
+.dark .ticket,
+.dark .float-card {
+  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.15)) drop-shadow(0 18px 30px rgba(16, 168, 106, 0.25));
+}
+
+/* Soft contact shadow on light theme so floating cards also lift off the page */
+.float-card {
+  box-shadow: 0 12px 28px -16px rgba(16, 168, 106, 0.35);
+}
+
+/* Text-stroke effect from original */
+.text-stroke {
+  -webkit-text-stroke: 5px var(--text-stroke);
+  color: var(--green);
+  paint-order: stroke fill;
+}
+
+/* Dropdown stagger reveal */
+.dropdown-list > li {
+  opacity: 0;
+  transform: translateX(2em);
+  transition:
+    opacity 0.45s cubic-bezier(0.525, 0, 0, 1),
+    transform 0.45s cubic-bezier(0.525, 0, 0, 1);
+}
+.dropdown:hover .dropdown-list > li,
+.dropdown:focus-within .dropdown-list > li {
+  opacity: 1;
+  transform: translateX(0);
+}
+.dropdown:hover .dropdown-list > li:nth-child(1),
+.dropdown:focus-within .dropdown-list > li:nth-child(1) {
+  transition-delay: 0.1s;
+}
+.dropdown:hover .dropdown-list > li:nth-child(2),
+.dropdown:focus-within .dropdown-list > li:nth-child(2) {
+  transition-delay: 0.18s;
+}
+.dropdown:hover .dropdown-list > li:nth-child(3),
+.dropdown:focus-within .dropdown-list > li:nth-child(3) {
+  transition-delay: 0.26s;
+}
+.dropdown:hover .dropdown-list > li:nth-child(4),
+.dropdown:focus-within .dropdown-list > li:nth-child(4) {
+  transition-delay: 0.34s;
+}
+.dropdown-panel {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    all 0.2s ease,
+    transform 0.45s cubic-bezier(0.525, 0, 0, 1);
+  transform: translateY(-8px);
+}
+.dropdown:hover .dropdown-panel,
+.dropdown:focus-within .dropdown-panel {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+.dropdown-icon {
+  transition: transform 0.45s cubic-bezier(0.525, 0, 0, 1);
+  display: inline-block;
+}
+.dropdown:hover .dropdown-icon,
+.dropdown:focus-within .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+/* Split-circle */
+.split-circle {
+  position: relative;
+  width: 200px;
+  aspect-ratio: 1/1;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 2px solid var(--blue);
+}
+.split-circle .half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+}
+.split-circle .half.left {
+  left: 0;
+  background: var(--green);
+}
+.split-circle .half.right {
+  right: 0;
+  background: var(--blue);
+}
+.split-circle .divider {
+  position: absolute;
+  inset: 0 auto 0 50%;
+  width: 2px;
+  background: #fff;
+  transform: translateX(-50%);
+}
+
+/* Split-photo (doctor + patient) — two half-circles making a full circle */
+.split-photo {
+  position: relative;
+  width: min(520px, 88vw);
+  aspect-ratio: 1/1;
+  border-radius: 9999px;
+  overflow: hidden;
+  border: 3px solid var(--green);
+  box-shadow: 0 30px 80px -30px rgba(16, 168, 106, 0.35);
+}
+.split-photo .half {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  overflow: hidden;
+}
+.split-photo .half img {
+  height: 100%;
+  width: 200%;
+  object-fit: cover;
+  display: block;
+}
+.split-photo .half.left {
+  left: 0;
+}
+.split-photo .half.left img {
+  object-position: center;
+  transform: translateX(0);
+}
+.split-photo .half.right {
+  right: 0;
+}
+.split-photo .half.right img {
+  width: 100%;
+  object-fit: contain;
+  object-position: center;
+  transform: none;
+}
+.split-photo .divider {
+  position: absolute;
+  inset: 0 auto 0 50%;
+  width: 3px;
+  background: #fff;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+/* Auth Page specific overrides */
+.auth-page-wrapper {
+  --ink: #0a3d2a;
+}
+.dark .auth-page-wrapper {
+  --ink: #eaf5ee;
+}
+
+/* Chatbot Thinking Pulse */
+@keyframes pulse {
+  0%, 100% {
+    transform: translateY(0) scale(0.8);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-4px) scale(1.1);
+    opacity: 1;
+  }
+}
+.a-pulse {
+  display: inline-block;
+  animation: pulse 1s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Marquee Grabbing Tilt Effect */
+.is-grabbing > div {
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+}
+
+.is-grabbing > div:nth-child(even) {
+  transform: rotate(3deg) scale(0.96) !important;
+}
+
+.is-grabbing > div:nth-child(odd) {
+  transform: rotate(-3deg) scale(0.96) !important;
+}
