@@ -36,6 +36,7 @@
 - [API Overview](#api-overview)
 - [Running Tests](#running-tests)
 - [Contributing](#contributing)
+- [Documentation](#documentation)
 - [License & Disclaimer](#license--disclaimer)
 
 ---
@@ -331,6 +332,21 @@ Contributions are welcome! Please follow these steps:
 5. **Open** a Pull Request
 
 > Please read [CODING_STANDARDS.md](CODING_STANDARDS.md) before contributing to ensure consistency.
+
+---
+
+## Documentation
+
+Additional project documentation is available in the [`docs/`](docs/) folder:
+
+| Document | Description |
+|---|---|
+| [REQUIREMENTS.md](REQUIREMENTS.md) | Full system requirements and dependency list |
+| [CODING_STANDARDS.md](CODING_STANDARDS.md) | Team coding guidelines and conventions |
+| [Hybrid Database Architecture](docs/adr/Hybrid-database-architecture.md) | Decision record for the Django + MongoDB setup |
+| [JWT Authentication & RBAC](docs/adr/Jwt-authentication-and-rbac.md) | Decision record for auth and role-based access |
+| [ML Risk Prediction & SHAP](docs/adr/ML-risk-prediction-and-shap.md) | Decision record for the ML engine design |
+| [Security Headers & Rate Limiting](docs/adr/Security-headers-and-rate-limiting.md) | Decision record for security hardening |
 
 ---
 
