@@ -184,6 +184,7 @@ function NotificationBell({ align = "right" }) {
 
 export function Header() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   return (
     <header className="sticky top-0 z-50 backdrop-blur bg-white/85 border-b border-line">
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between py-4">
@@ -202,7 +203,7 @@ export function Header() {
               </Link>
               <button
                 type="button"
-                onClick={() => { logout(); window.location.href = "/"; }}
+                onClick={() => { logout(); navigate({ to: "/" }); }}
                 className="a-button !bg-red-500 hover:!bg-red-600 !border-red-500"
               >
                 <span className="a-button__mask">

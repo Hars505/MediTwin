@@ -137,54 +137,7 @@ def add_lifestyle_log(user_id, log_data):
     }
     result = lifestyle_logs().insert_one(doc)
     doc['_id'] = str(result.inserted_id)
-    
-    # Evaluate achievements after logging
-    evaluate_and_award_badges(user_id)
-    
     return doc
-
-
-def evaluate_and_award_badges(user_id):
-    """Evaluate lifestyle logs and award badges if criteria are met."""
-    profile = get_health_profile(user_id)
-    if not profile:
-        return []
-
-    earned_badges = profile.get('achievements', [])
-    new_badges = []
-    
-    # Check if they have at least one log
-    logs = get_lifestyle_logs(user_id, limit=5)
-    if logs:
-        if 'First Step' not in earned_badges:
-            new_badges.append('First Step')
-            
-        latest_log = logs[0]
-        # Hydration Hero: Water intake >= 2500 ml
-        if latest_log.get('water_intake_ml', 0) >= 2500 and 'Hydration Hero' not in earned_badges:
-            new_badges.append('Hydration Hero')
-            
-        # Step Master: Steps >= 10000
-        if latest_log.get('steps', 0) >= 10000 and 'Step Master' not in earned_badges:
-            new_badges.append('Step Master')
-            
-        # Sleep Champion: Sleep hours >= 7
-        if latest_log.get('sleep_hours', 0) >= 7 and 'Sleep Champion' not in earned_badges:
-            new_badges.append('Sleep Champion')
-            
-        # Zen Master: Stress level <= 3
-        stress = latest_log.get('stress_level')
-        if stress is not None and stress <= 3 and 'Zen Master' not in earned_badges:
-            new_badges.append('Zen Master')
-
-    if new_badges:
-        earned_badges.extend(new_badges)
-        health_profiles().update_one(
-            {'user_id': user_id},
-            {'$set': {'achievements': earned_badges}}
-        )
-    
-    return new_badges
 
 
 def get_lifestyle_logs(user_id, limit=30):

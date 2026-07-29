@@ -145,6 +145,11 @@ export const reportsAPI = {
   list: () => request('/reports/'),
   generate: (data) => request('/reports/generate/', { method: 'POST', body: JSON.stringify(data) }),
   downloadUrl: (filename) => `${API_BASE}/reports/download/${filename}/`,
+  reportUrl: (filename, download = false) => {
+    const token = getToken();
+    const base = `${API_BASE}/reports/download/${filename}/?token=${encodeURIComponent(token || "")}`;
+    return download ? `${base}&download=1` : base;
+  },
 };
 
 // ══════════════════════════════════════════════════════════════════════

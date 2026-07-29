@@ -1,8 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
-import firetruckImg from "@/assets/firetruck.jpg";
-import ambulanceImg from "@/assets/ambulance.jpg";
-import doctorImg from "@/assets/doctor.jpg";
 
 export const Route = createFileRoute("/services")({
   component: Services,
@@ -11,21 +8,21 @@ export const Route = createFileRoute("/services")({
 function Services() {
   const services = [
     {
-      title: "Fire Rescue Unit",
-      desc: "Rapid on-site fire and trauma response with a fully equipped rescue truck and two paramedics. Ideal for high-risk industrial sites or large scale events.",
-      img: firetruckImg,
-      tag: "Up to 60 rescues / hour",
+      title: "AI Health Twin",
+      desc: "Your complete digital health replica. Syncs vitals, runs ML risk predictions for heart disease, diabetes & hypertension, and tracks everything in real time.",
+      img: "/AI Twin.png",
+      tag: "Real-time ML predictions",
     },
     {
-      title: "Mobile Ambulance",
-      desc: "Advanced life support ambulance, arriving in under 8 minutes anywhere in the metro area. Always ready for dispatch 24/7.",
-      img: ambulanceImg,
-      tag: "24/7 dispatch",
+      title: "24/7 Medical AI Assistant",
+      desc: "AI chatbot powered by medical LLM — ask health questions, check symptoms, get medication guidance anytime, no appointment needed.",
+      img: "/ChatBot.png",
+      tag: "Available 24/7",
     },
     {
       title: "Corporate Screening",
       desc: "Comprehensive health checks, vaccinations, and wellness programs delivered directly to your office. Keep your employees healthy and productive.",
-      img: doctorImg,
+      img: "/Screening.png",
       tag: "Tailored to your team",
     },
   ];
@@ -34,43 +31,63 @@ function Services() {
     <Layout>
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <p className="uppercase tracking-[0.3em] text-xs mb-4 text-green font-semibold">Our Fleet & Services</p>
-          <h1 className="text-5xl md:text-6xl font-semibold mb-6">Comprehensive care, delivered.</h1>
+          <p className="uppercase tracking-[0.3em] text-xs mb-4 text-green font-semibold">Our Services</p>
+          <h1 className="text-5xl md:text-6xl font-semibold mb-6">Intelligent health, always with you.</h1>
           <p className="text-lg text-ink opacity-70">
-            From emergency response to proactive corporate wellness, our fleet is equipped to handle a wide range of medical needs on-site.
+            From AI-powered risk prediction to 24/7 medical guidance, MediTwin puts proactive healthcare in your pocket.
           </p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((s, idx) => (
-            <div key={idx} className="group ticket border border-line rounded-[2rem] overflow-hidden bg-white shadow-lg hover:shadow-2xl transition-all duration-500">
-              <div className="relative h-64 overflow-hidden">
-                <img src={s.img} alt={s.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
-                <div className="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-green">
+            <div key={idx} className="relative overflow-hidden">
+              <div className="absolute -top-[18px] -left-[18px] w-[36px] h-[36px] rounded-full bg-transparent pointer-events-none"
+                style={{ border: '2px solid rgba(16, 168, 106, 0.5)' }} />
+              <div className="absolute -top-[18px] -right-[18px] w-[36px] h-[36px] rounded-full bg-transparent pointer-events-none"
+                style={{ border: '2px solid rgba(16, 168, 106, 0.5)' }} />
+              <div className="absolute -bottom-[18px] -left-[18px] w-[36px] h-[36px] rounded-full bg-transparent pointer-events-none"
+                style={{ border: '2px solid rgba(16, 168, 106, 0.5)' }} />
+              <div className="absolute -bottom-[18px] -right-[18px] w-[36px] h-[36px] rounded-full bg-transparent pointer-events-none"
+                style={{ border: '2px solid rgba(16, 168, 106, 0.5)' }} />
+              <div className="group ticket"
+                style={{ border: '2px solid rgba(16, 168, 106, 0.3)' }}>
+              <div className="relative h-48 overflow-hidden">
+                <img src={s.img} alt={s.title} className="w-full h-full object-cover" />
+                <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-green">
                   {s.tag}
                 </div>
               </div>
-              <div className="p-8">
+              <div className="px-10 py-8">
                 <h3 className="text-2xl font-semibold mb-3">{s.title}</h3>
-                <p className="text-ink opacity-70 mb-6">{s.desc}</p>
-                <button className="text-green font-semibold a-underline uppercase text-sm tracking-wider">Learn more</button>
+                <p className="text-ink opacity-70 mb-6 leading-relaxed">{s.desc}</p>
+                <Link to="/about" hash={`service-${idx}`} className="text-green font-semibold a-underline uppercase text-sm tracking-wider">Learn more</Link>
               </div>
             </div>
+          </div>
           ))}
         </div>
 
-        <div className="mt-20 ticket text-white p-12 rounded-[2rem] text-center max-w-4xl mx-auto" style={{ background: 'var(--green-soft)' }}>
-          <h2 className="text-4xl font-semibold mb-4">Need a custom care plan?</h2>
-          <p className="text-white/80 mb-8 max-w-xl mx-auto">
-            We understand that every event or site has unique requirements. Contact us to discuss a tailored solution.
+        <div className="mt-20 ticket p-12 md:px-[90px] md:py-[50px] text-center max-w-4xl mx-auto relative overflow-hidden"
+          style={{ border: '2px solid rgba(16, 168, 106, 0.3)' }}>
+          <div className="absolute -top-[18px] -left-[18px] w-[36px] h-[36px] rounded-full bg-transparent pointer-events-none"
+            style={{ border: '2px solid rgba(16, 168, 106, 0.5)' }} />
+          <div className="absolute -top-[18px] -right-[18px] w-[36px] h-[36px] rounded-full bg-transparent pointer-events-none"
+            style={{ border: '2px solid rgba(16, 168, 106, 0.5)' }} />
+          <div className="absolute -bottom-[18px] -left-[18px] w-[36px] h-[36px] rounded-full bg-transparent pointer-events-none"
+            style={{ border: '2px solid rgba(16, 168, 106, 0.5)' }} />
+          <div className="absolute -bottom-[18px] -right-[18px] w-[36px] h-[36px] rounded-full bg-transparent pointer-events-none"
+            style={{ border: '2px solid rgba(16, 168, 106, 0.5)' }} />
+          <h2 className="text-4xl font-semibold mb-4">Want to see it in action?</h2>
+          <p className="text-ink/70 mb-8 max-w-xl mx-auto">
+            Try the interactive demo or register for free to start building your own health twin.
           </p>
-          <a href="/contact" className="a-button a-button--ghost border-white text-black hover:bg-white hover:text-green">
+          <Link to="/register" className="a-button a-button--ghost">
             <span className="a-button__mask">
-              <span className="a-button__text" data-text="Get a quote">
-                Get a quote
+              <span className="a-button__text" data-text="Get started free">
+                Get started free
               </span>
             </span>
-          </a>
+          </Link>
         </div>
       </div>
     </Layout>

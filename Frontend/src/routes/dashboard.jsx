@@ -8,7 +8,6 @@ import { useDemo } from "@/context/DemoContext";
 import { patientAPI, mlAPI } from "@/lib/api";
 import { toast } from "sonner";
 import { HeartPulse, Activity, Thermometer, Droplets, TrendingUp, AlertTriangle, RefreshCw, Brain, Wifi, WifiOff, Zap, FlaskConical, X, Award, BookOpen } from "lucide-react";
-import { Tour } from "@/components/ui/Tour";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: () => {
@@ -136,7 +135,6 @@ function Dashboard() {
   const [riskScores, setRiskScores] = useState(null);
   const [profile,    setProfile]    = useState(null);
   const [loading,    setLoading]    = useState(true);
-  const [tourOpen,   setTourOpen]   = useState(false);
 
   // Demo mode
   const { demoMode, setDemoMode } = useDemo();
@@ -194,22 +192,6 @@ function Dashboard() {
     }
     finally  { 
       if (!ignoreRef.current) setLoading(false); 
-    }
-  }
-
-  useEffect(() => {
-    if (profile && !profile.tour_completed && !needsOnboarding) {
-      // Small delay to ensure elements are rendered
-      setTimeout(() => setTourOpen(true), 500);
-    }
-  }, [profile]);
-
-  async function handleTourComplete() {
-    try {
-      await patientAPI.request('/api/patient/tour-complete/', { method: 'POST' });
-      setProfile(p => ({ ...p, tour_completed: true }));
-    } catch (e) {
-      console.error('Failed to save tour completion', e);
     }
   }
 
@@ -480,34 +462,6 @@ function Dashboard() {
         )}
 
       </div>
-      
-      <Tour 
-        isOpen={tourOpen} 
-        onClose={() => setTourOpen(false)} 
-        onComplete={handleTourComplete}
-        steps={[
-          {
-            target: '#vitals-section',
-            title: 'Live Vitals',
-            content: 'Your core metrics tracked in real-time. If you have wearables connected, they stream here directly.'
-          },
-          {
-            target: '#risk-section',
-            title: 'AI Risk Predictions',
-            content: 'Our ML models continuously analyze your vitals and lifestyle logs to predict potential health risks.'
-          },
-          {
-            target: '#shap-section',
-            title: 'Explainable AI (SHAP)',
-            content: 'We don\'t just give you a score. We explain exactly which factors (like BMI or Glucose) contributed to it.'
-          },
-          {
-            target: '#demo-mode-btn',
-            title: 'Try Demo Mode',
-            content: 'No smart devices? No problem! Activate demo mode to simulate live vitals and see the AI react in real-time.'
-          }
-        ]}
-      />
     </AppShell>
   );
 }

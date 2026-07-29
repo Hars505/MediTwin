@@ -36,14 +36,14 @@
 /* Dark mode — deep green-black palette that pairs with the brand green */
 .dark {
   --bg: #07110d;
-  --ink: #eaf5ee;
-  --green: #34d39a; /* brighter emerald so it pops on dark */
-  --green-soft: #143023; /* elevated surface tinted with green */
-  --card: #1f4733; /* explicitly lighter than green-soft so cards stand out when placed on elevated backgrounds */
-  --card-float: #265e43; /* floating cards: slightly darker than --card for a layered feel */
-  --blue: #7bb0ff; /* softer, more legible on dark */
-  --line: rgba(234, 245, 238, 0.2);
-  --text-stroke: #0a3d2a; /* subtle dark green outline, just above bg for contrast */
+  --ink: #c8dcd0;
+  --green: #2ab88a;
+  --green-soft: #0f261b;
+  --card: #162f22;
+  --card-float: #1a3829;
+  --blue: #6a9fd6;
+  --line: rgba(200, 220, 208, 0.12);
+  --text-stroke: #0a3d2a;
   color-scheme: dark;
 }
 
@@ -690,9 +690,7 @@ img {
 .dark .bg-green-soft .ticket {
   background: var(--card);
   color: var(--ink);
-  /* match dark theme ticket filters from earlier rules */
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.15)) drop-shadow(0 18px 30px rgba(16, 168, 106, 0.25));
-  box-shadow: none;
+  box-shadow: 0 18px 30px rgba(16, 168, 106, 0.10);
 }
 
 /* Floating / flowing cards: clean rectangle with a slightly darker surface
@@ -708,7 +706,7 @@ img {
 /* Lift ticket cards above the dark background so edges read clearly */
 .dark .ticket,
 .dark .float-card {
-  filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.15)) drop-shadow(0 18px 30px rgba(16, 168, 106, 0.25));
+  filter: drop-shadow(0 18px 30px rgba(16, 168, 106, 0.10));
 }
 
 /* Soft contact shadow on light theme so floating cards also lift off the page */

@@ -44,7 +44,25 @@ class HealthProfileView(APIView):
                 {"detail": "Health profile not found. Complete onboarding first."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        return Response(profile)
+        demo = profile.get('demographics', {})
+        lifestyle = profile.get('lifestyle', {})
+        flat = {
+            'age': demo.get('age'),
+            'gender': request.user.gender or 'Not specified',
+            'height': demo.get('height_cm'),
+            'weight': demo.get('weight_kg'),
+            'bmi': demo.get('bmi'),
+            'blood_type': demo.get('blood_type'),
+            'family_history': profile.get('family_history', []),
+            'medical_conditions': profile.get('medical_conditions', []),
+            'medications': profile.get('medications', []),
+            'allergies': profile.get('allergies', []),
+            'smoking': lifestyle.get('smoking', False),
+            'alcohol': lifestyle.get('alcohol', 'none'),
+            'exercise_frequency': lifestyle.get('exercise_frequency', 'sedentary'),
+            'diet_type': lifestyle.get('diet_type', 'mixed'),
+        }
+        return Response(flat)
 
     def post(self, request):
         serializer = HealthProfileSerializer(data=request.data)

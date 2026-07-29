@@ -1,7 +1,6 @@
-import "./lib/error-capture";
+import "./lib/error-handling";
 
-import { consumeLastCapturedError } from "./lib/error-capture";
-import { renderErrorPage } from "./lib/error-page";
+import { consumeLastCapturedError, renderErrorPage } from "./lib/error-handling";
 
 
 

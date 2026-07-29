@@ -18,6 +18,8 @@ from rest_framework.throttling import ScopedRateThrottle
 
 from .generator import generate_health_report
 from . import mongo_models
+from bson import ObjectId
+from medi_Twin.auth import QueryParamJWTAuthentication
 
 FILENAME_SAFE_RE = re.compile(r"^[a-zA-Z0-9_\-]+\.pdf$")
 ALLOWED_REPORT_TYPES = {'full', 'summary', 'vitals'}
@@ -46,9 +48,17 @@ class GenerateReportView(APIView):
         
         notes = str(request.data.get('notes', ''))[:500]
 
-        # If a doctor is generating for a patient, record the doctor FK
         if request.user.is_doctor:
             doctor_id = request.user.id
+            # Convert string patient_id to ObjectId for MongoDB lookup
+            if isinstance(patient_id, str):
+                try:
+                    patient_id = ObjectId(patient_id)
+                except Exception:
+                    return Response(
+                        {"detail": "Invalid patient ID format."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
         else:
             patient_id = request.user.id  # patients can only generate for themselves
 
@@ -64,11 +74,25 @@ class GenerateReportView(APIView):
         risk_scores = risk_doc.get('scores', {}) if risk_doc else {}
         risk_data = {'conditions': risk_scores, 'cascade_effects': []}
 
+        # Look up the patient user for the report
+        from django.contrib.auth import get_user_model
+        PatientUser = get_user_model()
+        try:
+            patient_user = PatientUser.objects.get(id=patient_id)
+        except PatientUser.DoesNotExist:
+            return Response(
+                {"detail": "Patient account not found."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        doctor_user = request.user if request.user.is_doctor else None
+
         filename = generate_health_report(
-            user=request.user,
+            patient_user=patient_user,
             profile=profile,
             vitals_list=vitals,
             risk_scores=risk_data,
+            doctor_user=doctor_user,
         )
 
         # Save metadata with both FKs
@@ -103,6 +127,7 @@ class ListReportsView(APIView):
 class DownloadReportView(APIView):
     """GET — download a specific report PDF by filename."""
     permission_classes = (permissions.IsAuthenticated,)
+    authentication_classes = (QueryParamJWTAuthentication,)
 
     def get(self, request, filename):
         # Prevent directory traversal attacks
@@ -130,10 +155,12 @@ class DownloadReportView(APIView):
                 status=status.HTTP_404_NOT_FOUND,
             )
 
+        force_download = request.query_params.get('download', '').lower() in ('1', 'true', 'yes')
+
         return FileResponse(
             open(filepath, 'rb'),
             content_type='application/pdf',
-            as_attachment=True,
+            as_attachment=force_download,
             filename=filename,
         )
 

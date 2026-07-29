@@ -143,7 +143,7 @@ function Chatbot() {
           </div>
         </Reveal>
 
-        <div className="mt-4 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2">
+        <div className="mt-4 px-4 py-3 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs flex items-start gap-2 dark:bg-amber-900/15 dark:border-amber-800/40 dark:text-amber-300">
           <AlertCircle size={14} className="mt-0.5 shrink-0" />
           This AI assistant provides informational guidance only. It is not a substitute for professional medical advice, diagnosis, or treatment. Always consult your healthcare provider.
         </div>

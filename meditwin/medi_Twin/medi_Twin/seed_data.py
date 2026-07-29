@@ -29,8 +29,10 @@ USERS = [
     {'username': 'patient_alice',  'first_name': 'Alice',  'last_name': 'Sharma',   'email': 'alice@demo.com',  'role': 'patient', 'gender': 'female', 'phone': '9876543210'},
     {'username': 'patient_bob',    'first_name': 'Bob',    'last_name': 'Patel',    'email': 'bob@demo.com',    'role': 'patient', 'gender': 'male',   'phone': '9876543211'},
     {'username': 'patient_carol',  'first_name': 'Carol',  'last_name': 'Gupta',    'email': 'carol@demo.com',  'role': 'patient', 'gender': 'female', 'phone': '9876543212'},
+    {'username': 'rahul_demo',     'first_name': 'Rahul',  'last_name': 'Verma',    'email': 'rahul.verma@demo.com',  'role': 'patient', 'gender': 'male',   'phone': '9876543100'},
     {'username': 'doctor_raj',     'first_name': 'Dr. Raj','last_name': 'Mehta',    'email': 'raj@demo.com',    'role': 'doctor',  'gender': 'male',   'phone': '9876543220'},
     {'username': 'doctor_priya',   'first_name': 'Dr. Priya','last_name': 'Singh', 'email': 'priya@demo.com',  'role': 'doctor',  'gender': 'female', 'phone': '9876543221'},
+    {'username': 'doctor_ananya',  'first_name': 'Ananya','last_name': 'Sharma',   'email': 'ananya.sharma@meditwin.com', 'role': 'doctor', 'gender': 'female', 'phone': '9876543200'},
     {'username': 'admin_sys',      'first_name': 'System', 'last_name': 'Admin',    'email': 'admin@demo.com',  'role': 'admin',   'gender': 'male',   'phone': '9876543230'},
 ]
 
@@ -88,6 +90,14 @@ PROFILES = [
         'medications': ['oral contraceptive'],
         'allergies': ['sulfa'],
         'lifestyle': {'smoking': False, 'alcohol': 'none', 'exercise_frequency': 'active', 'diet_type': 'mixed'},
+    },
+    {
+        'demographics': {'age': 35, 'height_cm': 172.0, 'weight_kg': 73.0, 'bmi': 24.7, 'blood_type': 'O+'},
+        'family_history': ['diabetes'],
+        'medical_conditions': [],
+        'medications': [],
+        'allergies': [],
+        'lifestyle': {'smoking': False, 'alcohol': 'occasional', 'exercise_frequency': 'moderate', 'diet_type': 'mixed'},
     },
 ]
 
@@ -266,92 +276,6 @@ def seed_reports(patients, doctors):
     print(f"  ✅ reports — {3 * len(patients)} reports seeded (linked to patients & doctors)")
 
 
-# ── 8. Appointments (patient_id + doctor_id FKs) ───────────────────
-
-def seed_appointments(patients, doctors):
-    col = get_collection('appointments')
-    if col.count_documents({}) > 0:
-        print("  ⏭ appointments — already has data, skipping")
-        return
-    statuses = ['pending', 'confirmed', 'completed', 'cancelled']
-    for patient in patients:
-        doctor = random.choice(doctors)
-        # Past appointment (completed)
-        col.insert_one({
-            'patient_id': patient.id,
-            'doctor_id': doctor.id,
-            'status': 'completed',
-            'scheduled_at': _dt(days_ago=7),
-            'consultation_notes': f'Patient {patient.first_name} presented with mild symptoms. Vitals stable. Follow-up in 2 weeks.',
-            'risk_snapshot': {'diabetes': 0.35, 'heart_disease': 0.20, 'hypertension': 0.42},
-            'created_at': _dt(days_ago=10),
-        })
-        # Upcoming appointment
-        col.insert_one({
-            'patient_id': patient.id,
-            'doctor_id': doctors[(doctors.index(doctor) + 1) % len(doctors)].id,
-            'status': 'confirmed',
-            'scheduled_at': _dt(days_ago=-3),  # 3 days in the future
-            'consultation_notes': '',
-            'risk_snapshot': {},
-            'created_at': _dt(days_ago=1),
-        })
-    print(f"  ✅ appointments — {2 * len(patients)} appointments seeded (past + upcoming)")
-
-
-# ── 9. Anomaly Events ──────────────────────────────────────────────
-
-def seed_anomaly_events(patients):
-    col = get_collection('anomaly_events')
-    if col.count_documents({}) > 0:
-        print("  ⏭ anomaly_events — already has data, skipping")
-        return
-    anomalies = [
-        {'vital_type': 'heart_rate', 'value': 142.0, 'threshold': 120.0, 'severity': 'critical'},
-        {'vital_type': 'spo2',       'value': 89.0,  'threshold': 92.0,  'severity': 'critical'},
-        {'vital_type': 'blood_glucose', 'value': 285.0, 'threshold': 200.0, 'severity': 'warning'},
-        {'vital_type': 'systolic_bp',   'value': 172.0, 'threshold': 160.0, 'severity': 'warning'},
-        {'vital_type': 'temperature',   'value': 39.2,  'threshold': 38.5,  'severity': 'warning'},
-    ]
-    for i, patient in enumerate(patients):
-        for j in range(2):
-            anomaly = anomalies[(i * 2 + j) % len(anomalies)]
-            doc = {
-                'user_id': patient.id,
-                **anomaly,
-                'resolved': j == 0,  # first one resolved, second still active
-                'detected_at': _dt(days_ago=5 - j * 2),
-            }
-            col.insert_one(doc)
-    print(f"  ✅ anomaly_events — {2 * len(patients)} anomalies seeded")
-
-
-# ── 10. Model Metrics ──────────────────────────────────────────────
-
-def seed_model_metrics():
-    col = get_collection('model_metrics')
-    if col.count_documents({}) > 0:
-        print("  ⏭ model_metrics — already has data, skipping")
-        return
-    models = [
-        ('diabetes_xgb',       {'accuracy': 0.87, 'auc_roc': 0.92, 'f1_score': 0.85, 'precision': 0.88, 'recall': 0.83, 'dataset_size': 1000}),
-        ('heart_disease_rf',   {'accuracy': 0.84, 'auc_roc': 0.89, 'f1_score': 0.82, 'precision': 0.86, 'recall': 0.79, 'dataset_size': 1000}),
-        ('hypertension_gb',    {'accuracy': 0.86, 'auc_roc': 0.91, 'f1_score': 0.84, 'precision': 0.87, 'recall': 0.81, 'dataset_size': 1000}),
-    ]
-    for model_name, metrics in models:
-        for day in [14, 7, 0]:
-            doc = {
-                'model_name': model_name,
-                **metrics,
-                'recorded_at': _dt(days_ago=day),
-            }
-            # Slightly vary metrics over time
-            doc['accuracy'] = round(doc['accuracy'] + random.uniform(-0.02, 0.02), 4)
-            doc['auc_roc'] = round(doc['auc_roc'] + random.uniform(-0.01, 0.01), 4)
-            col.insert_one(doc)
-    print(f"  ✅ model_metrics — {3 * len(models)} metric records seeded")
-
-
 # ══════════════════════════════════════════════════════════════════════
 # Main entry point
 # ══════════════════════════════════════════════════════════════════════
@@ -360,8 +284,8 @@ def seed():
     """Run all seeders."""
     print("\n🌱 Seeding MediTwin database...\n")
 
-    # Step 1 — Django users (SQLite)
-    print("── Django Users (SQLite) ──")
+    # Step 1 — Django users
+    print("── Django Users ──")
     users = create_users()
     patients = [u for u in users if u.role == 'patient']
     doctors = [u for u in users if u.role == 'doctor']
@@ -374,9 +298,6 @@ def seed():
     seed_risk_scores(patients)
     seed_chatbot_sessions(patients)
     seed_reports(patients, doctors)
-    seed_appointments(patients, doctors)
-    seed_anomaly_events(patients)
-    seed_model_metrics()
 
     print("\n🎉 Seed complete!")
     print(f"   {len(patients)} patients, {len(doctors)} doctors, 1 admin")

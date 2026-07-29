@@ -76,20 +76,17 @@ function Onboarding() {
 
   function handleNext() {
     const err = validateStep();
-    if (err) { setError(err); return; }
-    setError("");
+    if (err) { toast.error(err); return; }
     setStep((s) => s + 1);
   }
   function handleBack() {
-    setError("");
     setStep((s) => s - 1);
   }
 
   async function handleSubmit() {
     const err = validateStep();
-    if (err) { setError(err); return; }
+    if (err) { toast.error(err); return; }
     setLoading(true);
-    setError("");
     try {
       const payload = {
         ...form,

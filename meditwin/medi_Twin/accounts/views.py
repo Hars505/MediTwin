@@ -233,7 +233,7 @@ class DoctorListView(APIView):
 class DoctorPatientsView(APIView):
     """
     GET /api/auth/doctor-patients/
-    Retrieve detailed clinical data for all patients assigned to the authenticated doctor.
+    Retrieve detailed clinical data for all patients with completed health profiles.
     Returns: demographics, latest vitals, latest risk scores, and CDS alerts.
     """
     permission_classes = (permissions.IsAuthenticated,)
@@ -245,32 +245,25 @@ class DoctorPatientsView(APIView):
                 status=status.HTTP_403_FORBIDDEN,
             )
             
-        assigned_patient_ids = mongo_models.get_assigned_patients(request.user.id)
-        if not assigned_patient_ids:
-            return Response([])
-            
-        # Fetch detailed data for each assigned patient
-        patient_users = User.objects.filter(id__in=assigned_patient_ids).values('id', 'first_name', 'last_name', 'username')
-        user_map = {u['id']: u for u in patient_users}
+        # Get all users with patient role who have completed onboarding
+        all_patients = User.objects.filter(
+            role='patient',
+            onboarding_complete=True,
+        ).values('id', 'first_name', 'last_name', 'username')
         
         patients_data = []
-        for pid in assigned_patient_ids:
-            user_info = user_map.get(pid, {})
-            profile = patient_models.get_health_profile(pid)
-            if not profile:
-                profile = {}
-                
+        for p in all_patients:
+            pid = p['id']
+            profile = patient_models.get_health_profile(pid) or {}
             vitals = patient_models.get_latest_vitals(pid)
             risks = ml_models.get_latest_risk_scores(pid)
-            
-            # Generate CDS alerts
             cds_alerts = clinical_rules.evaluate_patient_data(profile, vitals, risks)
             
             patients_data.append({
                 "patient_id": pid,
-                "first_name": user_info.get("first_name", ""),
-                "last_name": user_info.get("last_name", ""),
-                "username": user_info.get("username", ""),
+                "first_name": p["first_name"],
+                "last_name": p["last_name"],
+                "username": p["username"],
                 "profile": profile,
                 "latest_vitals": vitals,
                 "latest_risks": risks,

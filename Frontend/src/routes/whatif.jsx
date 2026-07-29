@@ -152,8 +152,8 @@ function WhatIf() {
     }
   }
   const displayCurrent = demoMode ? demoRisk : current;
-  const currentConds = displayCurrent?.risk_scores?.conditions || displayCurrent?.scores || {};
-  const simConds = simulated?.simulated || {};
+  const currentConds = displayCurrent?.risk_scores?.conditions || displayCurrent?.scores || displayCurrent?.risks || {};
+  const simConds = simulated?.simulated?.conditions || simulated?.simulated || {};
 
   return (
     <AppShell active="/whatif">

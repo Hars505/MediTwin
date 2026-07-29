@@ -13,7 +13,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { SocketProvider } from "@/context/SocketContext";
 import { DemoProvider } from "@/context/DemoContext";
 import appCss from "../styles.css?url";
-import { reportLovableError } from "../lib/lovable-error-reporting";
+import { reportLovableError } from "../lib/error-handling";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -81,7 +81,7 @@ export const Route = createRootRouteWithContext()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Medi Twin | Your Digital Health Twin" },
+      { title: "Medi Twin" },
       { name: "description", content: "AI-powered health risk prediction and digital twin platform." },
       { name: "author", content: "Medi Twin" },
       { property: "og:title", content: "Medi Twin" },
@@ -97,7 +97,7 @@ export const Route = createRootRouteWithContext()({
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@1,500;1,600&display=swap",
       },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
     ],
   }),
   shellComponent: RootShell,

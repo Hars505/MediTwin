@@ -75,6 +75,58 @@ function About() {
           </div>
         </div>
 
+        <div className="mb-16">
+          <h2 className="text-3xl md:text-5xl font-semibold mb-10">Our Services</h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <article id="service-0" className="ticket p-8 md:p-10 border border-line bg-card flex flex-col">
+              <span className="text-6xl text-green font-semibold mb-2">01</span>
+              <h3 className="text-3xl mt-4 font-semibold">AI Health Twin</h3>
+              <p className="mt-5 text-ink/80 leading-relaxed flex-grow">
+                Your digital twin is built from real-time vital streams — heart rate, blood pressure, SpO2, glucose, 
+                temperature, and respiratory rate — continuously synced via WebSocket. Our XGBoost models run 
+                predictive risk assessments for cardiovascular disease, diabetes, and hypertension, surfacing 
+                SHAP explainability so you see exactly which factors drive your scores. The What-If simulator 
+                lets you adjust lifestyle variables like BMI, smoking, or sleep and instantly see how your 
+                risk profile shifts, turning passive monitoring into proactive prevention.
+              </p>
+              <div className="mt-8 pt-6 border-t border-line/50">
+                <p className="text-xs font-bold uppercase tracking-widest text-green">Powered by</p>
+                <p className="mt-2 text-sm text-ink/70 font-mono">XGBoost, Django REST, React, Socket.IO</p>
+              </div>
+            </article>
+            <article id="service-1" className="ticket p-8 md:p-10 border border-line bg-card flex flex-col">
+              <span className="text-6xl text-green font-semibold mb-2">02</span>
+              <h3 className="text-3xl mt-4 font-semibold">24/7 Medical AI Assistant</h3>
+              <p className="mt-5 text-ink/80 leading-relaxed flex-grow">
+                Powered by a locally-hosted medllama2 model via Ollama, our chatbot delivers instant, 
+                context-aware answers to health questions without sending your data to third-party APIs. 
+                Ask about symptoms, medication interactions, lab results, or lifestyle recommendations — 
+                the engine maintains conversation history and can escalate to structured symptom triage 
+                when needed. No appointments, no wait times, just reliable medical intelligence available 
+                around the clock.
+              </p>
+              <div className="mt-8 pt-6 border-t border-line/50">
+                <p className="text-xs font-bold uppercase tracking-widest text-green">Powered by</p>
+                <p className="mt-2 text-sm text-ink/70 font-mono">Ollama, medllama2, Django REST, React</p>
+              </div>
+            </article>
+            <article id="service-2" className="ticket p-8 md:p-10 border border-line bg-card flex flex-col">
+              <span className="text-6xl text-green font-semibold mb-2">03</span>
+              <h3 className="text-3xl mt-4 font-semibold">Corporate Screening</h3>
+              <p className="mt-5 text-ink/80 leading-relaxed flex-grow">
+                Comprehensive health checks, vaccinations, and wellness programs delivered directly to your 
+                office. Our mobile medical team brings ECG, blood work, vision screening, and health 
+                counselling on-site, minimising employee downtime. Customizable packages range from basic 
+                annual checkups to advanced metabolic and cardiac risk panels.
+              </p>
+              <div className="mt-8 pt-6 border-t border-line/50">
+                <p className="text-xs font-bold uppercase tracking-widest text-green">Packages</p>
+                <p className="mt-2 text-sm text-ink/70 font-mono">Basic to advanced — tailored to your team</p>
+              </div>
+            </article>
+          </div>
+        </div>
+
         <div className="mb-10">
           <h2 className="text-3xl md:text-5xl font-semibold">Core Technologies</h2>
           <p className="text-ink/70 mt-4 text-lg max-w-2xl">The six technological pillars that power your digital health twin from the backend infrastructure to the front-end visualization.</p>

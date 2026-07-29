@@ -11,7 +11,7 @@ import patientImg from "@/assets/patient.png";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Medi Twin | Your Living Digital Health Twin" },
+      { title: "Medi Twin" },
       {
         name: "description",
         content:
@@ -63,7 +63,7 @@ function HeroPills() {
   return (
     <div className="absolute inset-0 pointer-events-none">
       <div
-        className="absolute -left-20 top-10 float-card pointer-events-auto p-5 w-56 a-float-lr"
+        className="absolute -left-24 -top-6 float-card pointer-events-auto p-5 w-56 a-float-lr"
         style={{
           ["--r"]: "-4deg",
           ["--pull-x"]: "18px",
@@ -78,7 +78,7 @@ function HeroPills() {
         <p className="text-xs mt-2 text-ink/70">resting heart rate</p>
       </div>
       <div
-        className="absolute -right-20 bottom-8 float-card pointer-events-auto p-5 w-60 a-float-rl"
+        className="absolute -right-36 -bottom-8 float-card pointer-events-auto p-5 w-60 a-float-rl"
         style={{
           ["--r"]: "5deg",
           animationDelay: "1.2s",
@@ -97,7 +97,7 @@ function HeroPills() {
         <p className="text-xs text-ink/70">Diabetes · last 7 days</p>
       </div>
       <div
-        className="absolute -right-16 top-6 float-card pointer-events-auto p-4 w-52 a-float-diag hidden lg:block"
+        className="absolute -right-32 -top-8 float-card pointer-events-auto p-4 w-52 a-float-diag hidden lg:block"
         style={{
           ["--r"]: "8deg",
           animationDelay: "0.6s",
@@ -113,7 +113,7 @@ function HeroPills() {
         <p className="text-xs text-ink/70">normal range</p>
       </div>
       <div
-        className="absolute -left-16 bottom-24 float-card pointer-events-auto p-4 w-48 a-float hidden lg:block"
+        className="absolute -left-20 -bottom-6 float-card pointer-events-auto p-4 w-48 a-float hidden lg:block"
         style={{
           ["--r"]: "-6deg",
           animationDelay: "0.4s",
@@ -131,7 +131,7 @@ function HeroPills() {
         <p className="text-sm font-semibold mt-1">All vitals fresh</p>
       </div>
       <div
-        className="absolute -right-12 top-1/2 -translate-y-1/2 float-card pointer-events-auto p-4 w-44 a-float-lr hidden xl:block"
+        className="absolute -right-40 top-1/2 -translate-y-1/2 float-card pointer-events-auto p-4 w-44 a-float-lr hidden xl:block"
         style={{
           ["--r"]: "3deg",
           animationDelay: "1.6s",
@@ -164,7 +164,7 @@ function Index() {
       {/* HERO */}
       <section className="relative">
         <div className="max-w-7xl mx-auto px-6 pt-20 pb-24 grid lg:grid-cols-12 gap-12 items-center">
-          <div className="lg:col-span-6">
+          <div className="lg:col-span-5">
             <Reveal>
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-green text-white text-[10px] uppercase tracking-[0.25em] font-semibold shadow-[0_18px_40px_-16px_rgba(16,168,106,0.55)] a-float mb-6">
                 <span className="w-1.5 h-1.5 rounded-full bg-white a-pulse" /> AI-Powered Health Intelligence
@@ -174,7 +174,7 @@ function Index() {
                 data-momentum="14"
               >
                 Your health,<br />
-                <span className="text-stroke">digitally twinned.</span>
+                <span className="text-stroke whitespace-nowrap">digitally twinned.</span>
               </h1>
               <p className="mt-8 text-lg max-w-lg text-ink/70">
                 Medi Twin creates a living digital replica of your health — predicting risks,
@@ -213,21 +213,16 @@ function Index() {
             </Reveal>
           </div>
 
-          <div className="lg:col-span-6 relative">
+          <div className="lg:col-span-7 relative ml-16">
             <Reveal delay={0.15}>
-              <div
-                className="relative rounded-[2rem] overflow-hidden border border-line shadow-2xl a-parallax"
-                data-scroll-speed="-0.4"
-              >
                 <img
-                  src={heroImg}
-                  alt="Medical team at the hospital"
-                  className="w-full h-[520px] object-cover"
+                    src="/Front_ image.png"
+                    alt="Digital health twin visualization"
+                  className="w-full"
                 />
-              </div>
             </Reveal>
             <HeroPills />
-            <div className="absolute -right-10 -top-6 w-24 h-24 rounded-full bg-green text-white grid place-items-center text-center text-[10px] leading-tight font-semibold a-spin p-4">
+            <div className="absolute -right-32 -top-16 w-24 h-24 rounded-full bg-green text-white grid place-items-center text-center text-[10px] leading-tight font-semibold a-spin p-4">
               AI · TWIN · 24/7 · AI · TWIN ·
             </div>
           </div>

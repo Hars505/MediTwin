@@ -5,7 +5,7 @@ import { Reveal } from "@/hooks/use-site-motion";
 import { useAuth } from "@/context/AuthContext";
 import { reportsAPI, doctorAPI, patientAPI } from "@/lib/api";
 import { toast } from "sonner";
-import { Stethoscope, Users, FileText, Plus, Settings, Save, Clock, Award, AlertTriangle, Info, HeartPulse } from "lucide-react";
+import { Stethoscope, Users, FileText, Plus, Settings, Save, Clock, Award, AlertTriangle, Info, HeartPulse, Eye, Download } from "lucide-react";
 
 export const Route = createFileRoute("/doctor")({
   beforeLoad: () => {
@@ -232,9 +232,9 @@ function DoctorPanel() {
           </div>
         </Reveal>
 
-        {/* Assigned Patients */}
+        {/* All Patients */}
         <Reveal>
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2"><Users size={18} className="text-green" /> Assigned patients & Clinical Decision Support</h2>
+          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2"><Users size={18} className="text-green" /> All Patients & Clinical Decision Support</h2>
           {patients?.length > 0 ? (
             <div className="grid gap-4 mb-10">
               {patients.map((p) => (
@@ -288,18 +288,25 @@ function DoctorPanel() {
           ) : (
             <div className="ticket p-10 text-center text-ink/50 mb-10">
               <Users size={28} className="mx-auto mb-2" />
-              <p className="text-sm">No patients assigned yet.</p>
+              <p className="text-sm">No patients with completed health profiles available.</p>
             </div>
           )}
         </Reveal>
 
         {/* Generate Report */}
         <Reveal>
-          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2"><Plus size={18} className="text-green" /> Generate report</h2>
+          <h2 className="text-lg font-semibold mb-3 flex items-center gap-2"><Plus size={18} className="text-green" /> Generate report for patient</h2>
           <form onSubmit={handleGenerate} className="ticket p-6 grid sm:grid-cols-3 gap-4 mb-10">
             <div>
-              <label className="block text-[10px] uppercase tracking-widest text-green font-semibold mb-1.5">Patient ID (optional)</label>
-              <input type="text" value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)} placeholder="Leave blank for self" className="w-full bg-white border border-line rounded-full px-5 py-3 outline-none text-sm focus:border-green" />
+              <label className="block text-[10px] uppercase tracking-widest text-green font-semibold mb-1.5">Patient</label>
+              <select value={selectedPatient} onChange={(e) => setSelectedPatient(e.target.value)} className="w-full bg-white border border-line rounded-full px-5 py-3 outline-none text-sm focus:border-green">
+                <option value="">— Select a patient —</option>
+                {patients.map((p) => (
+                  <option key={p.patient_id} value={p.patient_id}>
+                    {p.first_name} {p.last_name} (Age: {p.profile?.demographics?.age || '?'})
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className="block text-[10px] uppercase tracking-widest text-green font-semibold mb-1.5">Report type</label>
@@ -340,14 +347,18 @@ function DoctorPanel() {
                     </p>
                   </div>
                   {r.filename && (
-                    <a
-                      href={reportsAPI.downloadUrl(r.filename)}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-green text-sm font-semibold a-underline"
-                    >
-                      Download
-                    </a>
+                    <div className="flex gap-2 shrink-0">
+                      <a href={reportsAPI.reportUrl(r.filename)} target="_blank" rel="noreferrer" className="a-button a-button--ghost">
+                        <span className="a-button__mask">
+                          <span className="a-button__text" data-text="View"><Eye size={14} className="inline mr-1" />View</span>
+                        </span>
+                      </a>
+                      <a href={reportsAPI.reportUrl(r.filename, true)} download className="a-button a-button--ghost">
+                        <span className="a-button__mask">
+                          <span className="a-button__text" data-text="Download"><Download size={14} className="inline mr-1" />Download</span>
+                        </span>
+                      </a>
+                    </div>
                   )}
                 </div>
               ))}

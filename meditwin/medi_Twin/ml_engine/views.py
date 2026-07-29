@@ -35,13 +35,33 @@ class RiskScoresView(APIView):
     permission_classes = (permissions.IsAuthenticated,)
 
     def get(self, request):
-        scores = mongo_models.get_latest_risk_scores(request.user.id)
-        if not scores:
+        doc = mongo_models.get_latest_risk_scores(request.user.id)
+        if not doc:
             return Response(
                 {"detail": "No risk scores calculated yet. Submit vitals first."},
                 status=status.HTTP_404_NOT_FOUND,
             )
-        return Response(scores)
+        raw_scores = doc.get('scores', {})
+        flat_risks = {}
+        for cond, info in raw_scores.items():
+            label = cond.replace('_', ' ').title()
+            flat_risks[label] = info['probability'] if isinstance(info, dict) else info
+        shap_explanations = doc.get('shap_explanations', {})
+        shap_list = []
+        for cond, exp in shap_explanations.items():
+            for factor in exp.get('top_factors', []):
+                shap_list.append({
+                    'feature': factor.get('feature', cond),
+                    'impact': factor.get('impact_pct', 0) / 100,
+                })
+        result = {
+            'risks': flat_risks,
+            'scores': flat_risks,
+            'shap': shap_list,
+            'explanations': shap_list,
+            'calculated_at': doc.get('calculated_at'),
+        }
+        return Response(result)
 
 
 class CalculateRiskView(APIView):

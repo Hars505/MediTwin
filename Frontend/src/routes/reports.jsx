@@ -4,7 +4,7 @@ import { AppShell } from "@/components/Layout";
 import { Reveal } from "@/hooks/use-site-motion";
 import { reportsAPI } from "@/lib/api";
 import { toast } from "sonner";
-import { FileText, Download, FileDown, Plus } from "lucide-react";
+import { FileText, Download, FileDown, Plus, Eye } from "lucide-react";
 
 export const Route = createFileRoute("/reports")({
   beforeLoad: () => {
@@ -96,11 +96,18 @@ function Reports() {
                     </div>
                   </div>
                   {r.filename && (
-                    <a href={reportsAPI.downloadUrl(r.filename)} className="a-button a-button--ghost" download>
-                      <span className="a-button__mask">
-                        <span className="a-button__text" data-text="Download">Download</span>
-                      </span>
-                    </a>
+                    <div className="flex gap-2">
+                      <a href={reportsAPI.reportUrl(r.filename)} target="_blank" rel="noreferrer" className="a-button a-button--ghost">
+                        <span className="a-button__mask">
+                          <span className="a-button__text" data-text="View"><Eye size={14} className="inline mr-1" />View</span>
+                        </span>
+                      </a>
+                      <a href={reportsAPI.reportUrl(r.filename, true)} download className="a-button a-button--ghost">
+                        <span className="a-button__mask">
+                          <span className="a-button__text" data-text="Download"><Download size={14} className="inline mr-1" />Download</span>
+                        </span>
+                      </a>
+                    </div>
                   )}
                 </div>
               ))}

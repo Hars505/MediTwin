@@ -173,10 +173,7 @@ MediTwin/
 |   +-- server.js                # WebSocket server for live vitals
 |
 |-- requirements.txt             # Python dependencies
-|-- pyproject.toml               # Python tooling config (Black, Ruff, isort)
-|-- REQUIREMENTS.md              # Detailed dependency documentation
-|-- CODING_STANDARDS.md          # Team coding guidelines
-+-- .pre-commit-config.yaml      # Pre-commit hooks
++-- pyproject.toml               # Python tooling config (Black, Ruff, isort)
 ```
 
 ---
@@ -329,8 +326,6 @@ Contributions are welcome! Please follow these steps:
 3. **Commit** your changes using [conventional commits](https://www.conventionalcommits.org/) (`git commit -m 'feat: add amazing feature'`)
 4. **Push** to your branch (`git push origin feat/amazing-feature`)
 5. **Open** a Pull Request
-
-> Please read [CODING_STANDARDS.md](CODING_STANDARDS.md) before contributing to ensure consistency.
 
 ---
 

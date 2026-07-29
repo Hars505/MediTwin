@@ -1,7 +1,7 @@
 """
 ML model training script for MediTwin.
 
-Trains XGBoost, RandomForest, and GradientBoosting classifiers for:
+Trains XGBoost classifiers for:
   - Diabetes risk
   - Heart disease risk
   - Hypertension risk
@@ -19,7 +19,6 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, roc_auc_score, f1_score
 from xgboost import XGBClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
 
 MODELS_DIR = Path(__file__).resolve().parent.parent / 'trained_models'
 
@@ -95,53 +94,29 @@ CONDITIONS = ['diabetes', 'heart_disease', 'hypertension']
 
 
 def train_condition(condition, X, y):
-    """Train three classifiers for one condition and save the best."""
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y,
     )
 
-    classifiers = {
-        'xgb': XGBClassifier(
-            n_estimators=200, max_depth=4, learning_rate=0.05,
-            subsample=0.8, colsample_bytree=0.8,
-            eval_metric='logloss', use_label_encoder=False,
-            random_state=42,
-        ),
-        'rf': RandomForestClassifier(
-            n_estimators=150, max_depth=6, min_samples_leaf=3, random_state=42,
-        ),
-        'gb': GradientBoostingClassifier(
-            n_estimators=150, learning_rate=0.07, max_depth=3, random_state=42,
-        ),
-    }
+    clf = XGBClassifier(
+        n_estimators=200, max_depth=4, learning_rate=0.05,
+        subsample=0.8, colsample_bytree=0.8,
+        eval_metric='logloss', use_label_encoder=False,
+        random_state=42,
+    )
+    clf.fit(X_train, y_train)
+    preds = clf.predict(X_test)
+    probas = clf.predict_proba(X_test)[:, 1]
+    auc = roc_auc_score(y_test, probas)
+    acc = accuracy_score(y_test, preds)
+    f1 = f1_score(y_test, preds)
+    print(f"  [{condition}] acc={acc:.3f}  auc={auc:.3f}  f1={f1:.3f}")
 
-    best_model = None
-    best_auc = -1
-    results = {}
-
-    for name, clf in classifiers.items():
-        clf.fit(X_train, y_train)
-        preds = clf.predict(X_test)
-        probas = clf.predict_proba(X_test)[:, 1]
-        auc = roc_auc_score(y_test, probas)
-        acc = accuracy_score(y_test, preds)
-        f1 = f1_score(y_test, preds)
-
-        results[name] = {'accuracy': acc, 'auc_roc': auc, 'f1_score': f1}
-        print(f"  [{condition}:{name}] acc={acc:.3f}  auc={auc:.3f}  f1={f1:.3f}")
-
-        if auc > best_auc:
-            best_auc = auc
-            best_model = clf
-
-    # Save only the best model under the condition name
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
     model_path = MODELS_DIR / f'{condition}.pkl'
     with open(model_path, 'wb') as f:
-        pickle.dump(best_model, f)
-    print(f"  -> Best model saved to {model_path}")
-
-    return results
+        pickle.dump(clf, f)
+    print(f"  -> Model saved to {model_path}")
 
 
 def main():

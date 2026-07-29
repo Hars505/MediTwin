@@ -1,3 +1,26 @@
+let lastCapturedError;
+const TTL_MS = 5_000;
+
+function record(error) {
+  lastCapturedError = { error, at: Date.now() };
+}
+
+if (typeof globalThis.addEventListener === "function") {
+  globalThis.addEventListener("error", (event) => record(event.error ?? event));
+  globalThis.addEventListener("unhandledrejection", (event) => record(event.reason));
+}
+
+export function consumeLastCapturedError() {
+  if (!lastCapturedError) return undefined;
+  if (Date.now() - lastCapturedError.at > TTL_MS) {
+    lastCapturedError = undefined;
+    return undefined;
+  }
+  const { error } = lastCapturedError;
+  lastCapturedError = undefined;
+  return error;
+}
+
 export function renderErrorPage() {
   return `<!doctype html>
 <html lang="en">
@@ -27,4 +50,13 @@ export function renderErrorPage() {
     </div>
   </body>
 </html>`;
+}
+
+export function reportLovableError(error, context = {}) {
+  if (typeof window === "undefined") return;
+  window.__lovableEvents?.captureException?.(
+    error,
+    { source: "react_error_boundary", route: window.location.pathname, ...context },
+    { mechanism: "react_error_boundary", handled: false, severity: "error" }
+  );
 }
