@@ -1,22 +1,64 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Layout } from "@/components/Layout";
 import { useAuth } from "@/context/AuthContext";
 import { Reveal } from "@/hooks/use-site-motion";
 import { toast } from "sonner";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
+const GOOGLE_CLIENT_ID = "33056017162-d7v505gald39grpar8o7u7fpo1ei0fui.apps.googleusercontent.com";
+
 export const Route = createFileRoute("/login")({
   component: Login,
 });
 
 function Login() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const navigate = useNavigate();
   const [form, setForm] = useState({ username: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
-
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const googleBtnRef = useRef(null);
+
+  // Load Google Identity Services script and render the button
+  useEffect(() => {
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+    script.onload = () => {
+      if (window.google && googleBtnRef.current) {
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCallback,
+        });
+        window.google.accounts.id.renderButton(googleBtnRef.current, {
+          theme: "outline",
+          size: "large",
+          text: "continue_with",
+          shape: "pill",
+          logo_alignment: "left",
+          width: "700",
+        });
+      }
+    };
+    document.head.appendChild(script);
+    return () => { document.head.removeChild(script); };
+  }, []);
+
+  async function handleGoogleCallback(response) {
+    setGoogleLoading(true);
+    try {
+      const result = await loginWithGoogle(response.credential);
+      toast.success(result.created ? "Account created with Google!" : "Signed in with Google!");
+      navigate({ to: result.created ? "/onboarding" : "/dashboard" });
+    } catch (err) {
+      toast.error(err.data?.detail || "Google sign-in failed. Please try again.");
+    } finally {
+      setGoogleLoading(false);
+    }
+  }
 
   function handleChange(e) {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -95,6 +137,22 @@ function Login() {
               </span>
             </button>
           </form>
+
+          {/* Divider */}
+          <div className="flex items-center gap-4 my-6">
+            <div className="flex-1 h-px bg-line" />
+            <span className="text-xs text-ink/40 uppercase tracking-widest font-semibold">or</span>
+            <div className="flex-1 h-px bg-line" />
+          </div>
+
+          {/* Google Sign-In Button */}
+          <div className="flex justify-center w-full">
+            {googleLoading ? (
+              <div className="text-sm text-ink/60 py-3 text-center">Signing in with Google...</div>
+            ) : (
+              <div ref={googleBtnRef} className="flex justify-center" />
+            )}
+          </div>
 
           <p className="text-center text-sm text-ink/60 mt-6">
             Don't have an account?{" "}

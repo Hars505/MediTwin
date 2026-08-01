@@ -51,8 +51,15 @@ export function AuthProvider({ children }) {
     setUser(null);
   }, []);
 
+  const loginWithGoogle = useCallback(async (credential) => {
+    const data = await authAPI.googleLogin(credential);
+    setTokens({ access: data.access, refresh: data.refresh });
+    const me = await fetchProfile();
+    return { ...data, user: me };
+  }, [fetchProfile]);
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, refreshProfile: fetchProfile }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, loginWithGoogle, refreshProfile: fetchProfile }}>
       {children}
     </AuthContext.Provider>
   );

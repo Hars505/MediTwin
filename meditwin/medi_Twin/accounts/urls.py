@@ -12,6 +12,9 @@ urlpatterns = [
     path('login/', views.ThrottledTokenObtainPairView.as_view(), name='auth-login'),
     path('token/refresh/', views.ThrottledTokenRefreshView.as_view(), name='auth-token-refresh'),
 
+    # Google OAuth
+    path('google/', views.GoogleAuthView.as_view(), name='auth-google'),
+
     # Profile management
     path('profile/', views.ProfileView.as_view(), name='auth-profile'),
     path('change-password/', views.ChangePasswordView.as_view(), name='auth-change-password'),

@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Layout } from "@/components/Layout";
-import heroImg from "@/assets/hero-hospital.jpg";
 
 export const Route = createFileRoute("/about")({
   component: About,
@@ -69,7 +68,7 @@ function About() {
             </div>
             <div>
               <div className="relative rounded-[2rem] overflow-hidden shadow-2xl">
-                <img src={heroImg} alt="Our medical team" className="w-full h-auto object-cover" />
+                <img src="/Front_ image.png" alt="Medi Twin Overview" className="w-full h-auto object-cover" />
               </div>
             </div>
           </div>

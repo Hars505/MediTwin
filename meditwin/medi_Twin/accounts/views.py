@@ -3,6 +3,7 @@ Auth, profile, doctor, and notification views.
 
 Endpoints:
   POST /api/auth/register/            — register new user
+  POST /api/auth/google/              — sign in / sign up with Google
   GET/PUT /api/auth/profile/          — user profile
   POST /api/auth/change-password/     — change password
   GET/PUT /api/auth/doctor-profile/   — doctor-specific profile
@@ -26,6 +27,7 @@ from .serializers import (
     DoctorProfileSerializer,
 )
 from . import mongo_models
+from .email_utils import send_transactional_email
 # pyrefly: ignore [missing-import]
 from patients import mongo_models as patient_models
 # pyrefly: ignore [missing-import]
@@ -57,6 +59,18 @@ class ThrottledTokenObtainPairView(TokenObtainPairView):
     """Rate-limited JWT token login endpoint."""
     throttle_classes = (ScopedRateThrottle,)
     throttle_scope = 'auth'
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if response.status_code == status.HTTP_200_OK:
+            username = request.data.get('username')
+            if username:
+                try:
+                    user = User.objects.get(username=username)
+                    send_transactional_email(user, 'login', ip_address=_get_client_ip(request))
+                except User.DoesNotExist:
+                    pass
+        return response
 
 
 class ThrottledTokenRefreshView(TokenRefreshView):
@@ -97,6 +111,9 @@ class RegisterView(APIView):
             user_agent=request.META.get('HTTP_USER_AGENT', ''),
             details={'role': user.role},
         )
+        
+        # Send welcome email
+        send_transactional_email(user, 'register')
 
         return Response({
             "message": "User registered successfully.",
@@ -316,3 +333,111 @@ class MarkNotificationReadView(APIView):
             )
         mongo_models.mark_notification_read(notif_id)
         return Response({"message": "Notification marked as read."})
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Google OAuth Views
+# ══════════════════════════════════════════════════════════════════════
+
+class GoogleAuthView(APIView):
+    """
+    POST /api/auth/google/
+    Authenticate with a Google ID token.
+
+    - Verifies the token with Google.
+    - Creates a new user if the email doesn't exist.
+    - Returns JWT access + refresh tokens.
+
+    Body: { "credential": "<Google ID Token>" }
+    """
+    permission_classes = (permissions.AllowAny,)
+    throttle_classes = (ScopedRateThrottle,)
+    throttle_scope = 'auth'
+
+    def post(self, request):
+        from google.oauth2 import id_token
+        from google.auth.transport import requests as google_requests
+        from django.conf import settings
+        from rest_framework_simplejwt.tokens import RefreshToken
+        import secrets
+
+        credential = request.data.get('credential')
+        if not credential:
+            return Response(
+                {"detail": "Google credential token is required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Verify the Google ID token
+        try:
+            idinfo = id_token.verify_oauth2_token(
+                credential,
+                google_requests.Request(),
+                settings.GOOGLE_CLIENT_ID,
+            )
+        except ValueError:
+            return Response(
+                {"detail": "Invalid Google token."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # Extract user info from the verified token
+        email = idinfo.get('email')
+        first_name = idinfo.get('given_name', '')
+        last_name = idinfo.get('family_name', '')
+
+        if not email:
+            return Response(
+                {"detail": "Google account has no email address."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Find or create the user
+        try:
+            user = User.objects.get(email=email)
+            created = False
+        except User.DoesNotExist:
+            # Create a new user with a random password (they'll use Google to log in)
+            username = email.split('@')[0]
+            # Ensure username is unique
+            base_username = username
+            counter = 1
+            while User.objects.filter(username=username).exists():
+                username = f"{base_username}{counter}"
+                counter += 1
+
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=secrets.token_urlsafe(32),
+                first_name=first_name,
+                last_name=last_name,
+                role='patient',
+            )
+            created = True
+
+        # Generate JWT tokens
+        refresh = RefreshToken.for_user(user)
+
+        # Audit log
+        mongo_models.log_audit_event(
+            user_id=user.id,
+            action='google_login' if not created else 'google_register',
+            ip_address=_get_client_ip(request),
+            user_agent=request.META.get('HTTP_USER_AGENT', ''),
+            details={'email': email},
+        )
+        
+        # Send email notification
+        if created:
+            send_transactional_email(user, 'register')
+        else:
+            send_transactional_email(user, 'login', ip_address=_get_client_ip(request))
+
+        return Response({
+            "message": "Logged in with Google." if not created else "Account created with Google.",
+            "user": UserProfileSerializer(user).data,
+            "access": str(refresh.access_token),
+            "refresh": str(refresh),
+            "created": created,
+        }, status=status.HTTP_200_OK if not created else status.HTTP_201_CREATED)

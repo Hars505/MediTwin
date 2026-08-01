@@ -235,3 +235,28 @@ CORS_ALLOW_CREDENTIALS = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 REPORTS_DIR = MEDIA_ROOT / 'reports'
+
+
+# =============================================================================
+# Google OAuth Configuration
+# =============================================================================
+
+GOOGLE_CLIENT_ID = os.environ.get(
+    'GOOGLE_CLIENT_ID',
+    '33056017162-d7v505gald39grpar8o7u7fpo1ei0fui.apps.googleusercontent.com'
+)
+
+# =============================================================================
+# Email & SMTP Configuration
+# =============================================================================
+
+# Default to SMTP backend so it sends real emails!
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+
+# REPLACE THESE STRINGS WITH YOUR ACTUAL GMAIL AND APP PASSWORD
+EMAIL_HOST_USER = 'meditwinv1@gmail.com'
+EMAIL_HOST_PASSWORD = 'puhd xyxb mxnn uukv'
+DEFAULT_FROM_EMAIL = f'Medi Twin <[EMAIL_ADDRESS]>'

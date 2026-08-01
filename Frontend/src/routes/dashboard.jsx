@@ -7,7 +7,7 @@ import { useSocket } from "@/context/SocketContext";
 import { useDemo } from "@/context/DemoContext";
 import { patientAPI, mlAPI } from "@/lib/api";
 import { toast } from "sonner";
-import { HeartPulse, Activity, Thermometer, Droplets, TrendingUp, AlertTriangle, RefreshCw, Brain, Wifi, WifiOff, Zap, FlaskConical, X, Award, BookOpen } from "lucide-react";
+import { HeartPulse, Activity, Thermometer, Droplets, TrendingUp, AlertTriangle, RefreshCw, Brain, Zap, FlaskConical, X, Award, BookOpen } from "lucide-react";
 
 export const Route = createFileRoute("/dashboard")({
   beforeLoad: () => {
@@ -220,15 +220,6 @@ function Dashboard() {
               <p className="mt-2 text-ink/70 text-sm">Your live vitals, risk scores, and AI insights.</p>
             </div>
             <div className="flex gap-3 items-center flex-wrap">
-              {/* Connection badge (real mode only) */}
-              {!demoMode && (
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-widest border ${
-                  connected ? "border-green-300 bg-green-50 text-green-700" : "border-red-200 bg-red-50 text-red-600"
-                }`}>
-                  {connected ? <Wifi size={12} /> : <WifiOff size={12} />}
-                  {connected ? "Live" : "Offline"}
-                </span>
-              )}
 
               {/* Demo badge */}
               {demoMode && (

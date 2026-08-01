@@ -93,6 +93,7 @@ export class ApiError extends Error {
 export const authAPI = {
   login: (data) => request('/auth/login/', { method: 'POST', body: JSON.stringify(data), auth: false }),
   register: (data) => request('/auth/register/', { method: 'POST', body: JSON.stringify(data), auth: false }),
+  googleLogin: (credential) => request('/auth/google/', { method: 'POST', body: JSON.stringify({ credential }), auth: false }),
   refresh: (data) => request('/auth/token/refresh/', { method: 'POST', body: JSON.stringify(data) }),
   profile: () => request('/auth/profile/'),
   updateProfile: (data) => request('/auth/profile/', { method: 'PUT', body: JSON.stringify(data) }),
