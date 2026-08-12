@@ -243,7 +243,7 @@ REPORTS_DIR = MEDIA_ROOT / 'reports'
 
 GOOGLE_CLIENT_ID = os.environ.get(
     'GOOGLE_CLIENT_ID',
-    '33056017162-d7v505gald39grpar8o7u7fpo1ei0fui.apps.googleusercontent.com'
+    '1012276386491-idv7bf254kvlje3p2l6dsluut4g7p7qe.apps.googleusercontent.com'
 )
 
 # =============================================================================
