@@ -6,7 +6,7 @@ import { Reveal } from "@/hooks/use-site-motion";
 import { toast } from "sonner";
 import { Mail, Lock, Eye, EyeOff } from "lucide-react";
 
-const GOOGLE_CLIENT_ID = "33056017162-d7v505gald39grpar8o7u7fpo1ei0fui.apps.googleusercontent.com";
+const GOOGLE_CLIENT_ID = "1012276386491-idv7bf254kvlje3p2l6dsluut4g7p7qe.apps.googleusercontent.com";
 
 export const Route = createFileRoute("/login")({
   component: Login,
